@@ -1,6 +1,20 @@
 const { mergeSchemas } = require('graphql-tools')
-const couponsSchema = require('../coupons/schema')
-const storesSchema = require('../stores/schema')
+const { makeExecutableSchema } = require('graphql-tools')
+const couponsTypeDefs = require('../coupons/typeDefs')
+const couponsResolvers = require('../coupons/resolvers')
+const storesTypeDefs = require('../stores/typeDefs')
+const storesResolvers = require('../stores/resolvers')
+
+const couponsSchema = makeExecutableSchema({
+  typeDefs: couponsTypeDefs,
+  resolvers: couponsResolvers
+})
+
+const storesSchema = makeExecutableSchema({
+  typeDefs: storesTypeDefs,
+  resolvers: storesResolvers
+})
+
 
 const extensionSchema = `
   extend type Store {
@@ -9,7 +23,7 @@ const extensionSchema = `
 `
 
 const rootSchema = mergeSchemas({
-  schemas: [storesSchema, couponsSchema, extensionSchema],
+  schemas: [couponsSchema, storesSchema, extensionSchema],
   resolvers: mergeInfo => ({
     Store: {
       coupons: {
@@ -29,7 +43,6 @@ const rootSchema = mergeSchemas({
       }
     }
   })
-})
-
+});
 
 module.exports = rootSchema
